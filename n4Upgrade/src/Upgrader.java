@@ -1,6 +1,8 @@
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.eclipse.jgit.api.errors.CanceledException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
@@ -17,7 +19,23 @@ public class Upgrader {
 		UpgradeCheck n4 = new UpgradeCheck();
 		try {
 			n4.setRepositories();
-			n4.isNew();
+			if(n4.isNew()) {
+				System.out.println("최신 버전입니다.");
+			} 
+			else {
+				ArrayList<String> updatedTags = n4.getUpdatedTags();
+				System.out.println("최신 버전이 존재합니다.");
+				System.out.println("업그레이드 하시겠습니까?(y/n)");
+				if(getYesNoKey()) {
+					//최신 태그로 머지
+					n4.merge(updatedTags);
+				}
+				else {
+					// tag 목록 delete
+					n4.deleteTags(updatedTags);
+				}
+			}
+				
 		} catch (WrongRepositoryStateException e) {
 			e.printStackTrace();
 		} catch (InvalidConfigurationException e) {
@@ -41,4 +59,15 @@ public class Upgrader {
 		}
 	}
 	
+	public static boolean getYesNoKey() {
+	    int key;
+	    Scanner oScanner = new java.util.Scanner(System.in);
+	    do { 
+	    	key = oScanner.findInLine(".").charAt(0);
+	        if (key == 'y' || key == 'Y') return true;
+	        if (key == 'n' || key == 'N') return false;
+	    } while (key != 0);
+
+	      return false; 
+	  }
 }

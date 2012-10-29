@@ -1,41 +1,48 @@
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.jgit.api.DeleteTagCommand;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.TagCommand;
+import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.errors.CanceledException;
+import org.eclipse.jgit.api.errors.CheckoutConflictException;
+import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.DetachedHeadException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import org.eclipse.jgit.api.errors.InvalidMergeHeadsException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.lib.Config;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.RefSpec;
 
 public class UpgradeCheck {
 
-	Repository local; 
-	Repository master;
+	private Repository local;
+	private Git localGit;
+	private ArrayList<String> localTags;
+	private ArrayList<String> remoteTags;
+	
 	private String remoteURI;
 	
 	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		this.local = new RepositoryBuilder().findGitDir().build();
-		//this.remoteURI = getRemote(local);
-		this.remoteURI = "git://github.com/youngje/privateNhn.git";
-		fetchGit(local);
+		this.remoteURI = getRemote(local);
+		//this.remoteURI = "git://github.com/youngje/privateNhn.git";
+		this.localGit = new Git(local);
 		
 	}
 	
@@ -51,9 +58,8 @@ public class UpgradeCheck {
 	}
 	
 	public String fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
-		Git git = new Git(repo);
-		FetchCommand fetch = git.fetch();
-		git.branchList().call();
+		FetchCommand fetch = localGit.fetch();
+		localGit.branchList().call();
 		return fetch.setRemote(remoteURI).setRefSpecs(new RefSpec("refs/heads/master")).call().getMessages();
 	}
 	
@@ -76,24 +82,34 @@ public class UpgradeCheck {
 		return tags.get(0);
 	}
 	
-	public void isNew() throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, TransportException, GitAPIException{
-		String localTag = findLastTag(getTags(local));
-		String masterTag = findLastTag(getTags(master));
+	public boolean isNew() throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, TransportException, GitAPIException{
+		this.localTags = getTags(local);
+		fetchGit(local);
+		this.remoteTags = getTags(local);
 		
-		System.out.println();
-		
-		if(localTag.equals(masterTag)){
-			System.out.println("최신 버전입니다");
+		return findLastTag(localTags).equals(findLastTag(remoteTags));
+	}
+	
+	public ArrayList<String> getUpdatedTags(){
+		for(String tag : localTags) {
+			if(remoteTags.contains(tag)) {
+				remoteTags.remove(tag);
+			}
 		}
-		else{
-			System.out.println("최신 버전이 존재합니다.");
-			Git git = new Git(local);
-			if(git.pull().setTimeout(500).call().isSuccessful()){
-				System.out.println("upgrade가 성공하였습니다");
-			}
-			else{
-				System.out.println("upgrade를 실패하였습니다");
-			}
+		
+		return remoteTags;
+	}
+
+	public void merge(ArrayList<String> updatedTags) throws IOException, NoHeadException, ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException, WrongRepositoryStateException, NoMessageException, GitAPIException {
+		Ref tag = local.getRef(findLastTag(updatedTags));
+		MergeCommand merge = localGit.merge();
+		merge.include(tag).call();
+	}
+
+	public void deleteTags(ArrayList<String> updatedTags) throws GitAPIException {
+		for(String tag : updatedTags) {
+			DeleteTagCommand delete = localGit.tagDelete();
+			delete.setTags(tag).call();
 		}
 	}
 	

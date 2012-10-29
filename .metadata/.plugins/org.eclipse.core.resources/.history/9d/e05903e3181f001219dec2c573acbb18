@@ -1,0 +1,12 @@
+
+public class Upgrade {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Upgrader upgrader = new Upgrader();
+		upgrader.upgrade();
+	}
+
+}
