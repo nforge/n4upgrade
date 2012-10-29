@@ -19,7 +19,7 @@ public class Upgrader {
 		UpgradeCheck n4 = new UpgradeCheck();
 		try {
 			n4.setRepositories();
-			if(n4.isNew()) {
+			if(n4.isLatetestVersion()) {
 				System.out.println(" 최신 버전입니다.");
 			} 
 			else {

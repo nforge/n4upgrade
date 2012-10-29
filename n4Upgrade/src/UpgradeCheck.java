@@ -1,4 +1,4 @@
-
+// 주석, refactoring, testunit
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +32,8 @@ import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.TagOpt;
 
 public class UpgradeCheck {
-
+	
+	public final static String  REMOTE_BRANCH = "refs/heads/upgrade";
 	private Repository local;
 	private Git localGit;
 	private ArrayList<String> localTags;
@@ -42,30 +43,31 @@ public class UpgradeCheck {
 	
 	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		this.local = new RepositoryBuilder().findGitDir().build();
-		this.remoteURI = getRemote(local);
+		this.remoteURI = getRemote();
 		this.localGit = new Git(local);
 	}
 	
-	public String getRemote(Repository repo){
-		Config storedConfig = repo.getConfig();
+	public String getRemote(){
+		Config storedConfig = local.getConfig();
 		Set<String> remotes = storedConfig.getSubsections("remote");
+		//System.out.println(remotes.containsAll());
 		String url = null;
 		for(String remoteName : remotes){
 			url = storedConfig.getString("remote", remoteName, "url");
 		}
 		return url;
-		
 	}
 	
 	public void fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
 		FetchCommand fetch = localGit.fetch();
-		fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec("refs/heads/upgrade")).call();
+		fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec(REMOTE_BRANCH)).call();
 	}
 	
 	public ArrayList<String> getTags(Repository repository){
 		Iterator<String> tagKeys = repository.getTags().keySet().iterator();
 		ArrayList<String> tags = new ArrayList<String>();
 		
+		tags.size();
 		while(tagKeys.hasNext()){
 			tags.add(tagKeys.next());
 		}
@@ -82,7 +84,7 @@ public class UpgradeCheck {
 		return tags.get(0);
 	}
 	
-	public boolean isNew() throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, TransportException, GitAPIException{
+	public boolean isLatetestVersion() throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, TransportException, GitAPIException{
 		this.localTags = getTags(local);
 		String lastLocalTag = findLastTag(localTags);
 		

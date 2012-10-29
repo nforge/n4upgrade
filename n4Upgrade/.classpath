@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry exported="true" kind="lib" path="C:/eclipse/lib/org.eclipse.jgit-2.1.0.201209190230-r.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Users/Administrator/Downloads/jsch-0.1.48.jar"/>
+	<classpathentry kind="lib" path="lib/jsch-0.1.48.jar"/>
+	<classpathentry kind="lib" path="lib/org.eclipse.jgit-2.1.0.201209190230-r.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
