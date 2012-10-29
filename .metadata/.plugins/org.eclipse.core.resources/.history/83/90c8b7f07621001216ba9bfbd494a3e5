@@ -60,7 +60,7 @@ public class UpgradeCheck {
 	public String fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
 		FetchCommand fetch = localGit.fetch();
 		localGit.branchList().call();
-		return fetch.setRemote(remoteURI).setRefSpecs(new RefSpec("refs/heads/master")).call().getMessages();
+		return fetch.setRemote(remoteURI).setRefSpecs(new RefSpec("refs/heads/origin")).call().getMessages();
 	}
 	
 	public ArrayList<String> getTags(Repository repository){

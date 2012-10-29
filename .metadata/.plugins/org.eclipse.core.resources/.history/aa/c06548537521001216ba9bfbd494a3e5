@@ -40,8 +40,8 @@ public class UpgradeCheck {
 	
 	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		this.local = new RepositoryBuilder().findGitDir().build();
-		//this.remoteURI = getRemote(local);
-		this.remoteURI = "git://github.com/youngje/privateNhn.git";
+		this.remoteURI = getRemote(local);
+		//this.remoteURI = "git://github.com/youngje/privateNhn.git";
 		this.localGit = new Git(local);
 		
 	}
