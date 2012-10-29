@@ -20,19 +20,19 @@ public class Upgrader {
 		try {
 			n4.setRepositories();
 			if(n4.isNew()) {
-				System.out.println("최신 버전입니다.");
+				System.out.println(" 최신 버전입니다.");
 			} 
 			else {
 				ArrayList<String> updatedTags = n4.getUpdatedTags();
-				System.out.println("최신 버전이 존재합니다.");
-				System.out.println("업그레이드 하시겠습니까?(y/n)");
+				System.out.println(" 최신 버전이 존재합니다.");
+				System.out.print(" 업그레이드 하시겠습니까?(y/n)  : ");
 				if(getYesNoKey()) {
-					//최신 태그로 머지
 					n4.merge(updatedTags);
+					System.out.println(" 업그레이드 완료 되었습니다.");
 				}
 				else {
-					// tag 목록 delete
 					n4.deleteTags(updatedTags);
+					System.out.println(" 업그레이드가 취소되었습니다.");
 				}
 			}
 				

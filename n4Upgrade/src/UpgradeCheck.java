@@ -3,6 +3,7 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.TagOpt;
 
 public class UpgradeCheck {
 
@@ -40,10 +42,8 @@ public class UpgradeCheck {
 	
 	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		this.local = new RepositoryBuilder().findGitDir().build();
-		//this.remoteURI = getRemote(local);
-		this.remoteURI = "git://github.com/youngje/privateNhn.git";
+		this.remoteURI = getRemote(local);
 		this.localGit = new Git(local);
-		
 	}
 	
 	public String getRemote(Repository repo){
@@ -57,10 +57,9 @@ public class UpgradeCheck {
 		
 	}
 	
-	public String fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
+	public void fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
 		FetchCommand fetch = localGit.fetch();
-		localGit.branchList().call();
-		return fetch.setRemote(remoteURI).setRefSpecs(new RefSpec("refs/heads/master")).call().getMessages();
+		fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec("refs/heads/upgrade")).call();
 	}
 	
 	public ArrayList<String> getTags(Repository repository){
@@ -71,23 +70,31 @@ public class UpgradeCheck {
 			tags.add(tagKeys.next());
 		}
 
-		for(String tag : tags){
-			System.out.println(tag);
-		}
 		return tags;
 	}
 
 	public String findLastTag(ArrayList<String> tags){
-		Collections.sort(tags);
+		Collections.sort(tags, new Comparator<String>() {
+			public int compare(String tag1, String tag2) {
+				return Double.valueOf(tag1)>Double.valueOf(tag2)?-1:1;
+			}
+		});
 		return tags.get(0);
 	}
 	
 	public boolean isNew() throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, TransportException, GitAPIException{
 		this.localTags = getTags(local);
-		fetchGit(local);
-		this.remoteTags = getTags(local);
+		String lastLocalTag = findLastTag(localTags);
 		
-		return findLastTag(localTags).equals(findLastTag(remoteTags));
+		fetchGit(local);
+		
+		this.remoteTags = getTags(local);
+		String lastRemoteTag = findLastTag(remoteTags);
+		
+		System.out.println(" - Current version : " + lastLocalTag);
+		System.out.println(" - The latest version : " + lastRemoteTag);
+		
+		return lastLocalTag.equals(lastRemoteTag);
 	}
 	
 	public ArrayList<String> getUpdatedTags(){
@@ -96,7 +103,6 @@ public class UpgradeCheck {
 				remoteTags.remove(tag);
 			}
 		}
-		
 		return remoteTags;
 	}
 
