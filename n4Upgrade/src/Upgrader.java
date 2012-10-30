@@ -19,6 +19,11 @@ public class Upgrader {
 		UpgradeCheck n4 = new UpgradeCheck();
 		try {
 			n4.setRepositories();
+			if(n4.hasNoTags()){
+				System.out.println(" local 저장소에 upgrade 버전 태그가 존재하지 않습니다.");
+				System.out.println(" upgrade를 종료합니다.");
+				return;
+			}
 			if(n4.isLatetestVersion()) {
 				System.out.println(" 최신 버전입니다.");
 			} 

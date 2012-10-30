@@ -34,11 +34,11 @@ import org.eclipse.jgit.transport.TagOpt;
 public class UpgradeCheck {
 	
 	public final static String  REMOTE_BRANCH = "refs/heads/upgrade";
+	
 	private Repository local;
 	private Git localGit;
 	private ArrayList<String> localTags;
 	private ArrayList<String> remoteTags;
-	
 	private String remoteURI;
 	
 	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
@@ -50,12 +50,13 @@ public class UpgradeCheck {
 	public String getRemote(){
 		Config storedConfig = local.getConfig();
 		Set<String> remotes = storedConfig.getSubsections("remote");
-		//System.out.println(remotes.containsAll());
-		String url = null;
-		for(String remoteName : remotes){
-			url = storedConfig.getString("remote", remoteName, "url");
-		}
-		return url;
+		String remoteName = (String) remotes.toArray()[0];
+
+		return storedConfig.getString("remote", remoteName, "url");
+	}
+	
+	public boolean hasNoTags() { 
+		return getTags(local).isEmpty();
 	}
 	
 	public void fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
@@ -67,7 +68,6 @@ public class UpgradeCheck {
 		Iterator<String> tagKeys = repository.getTags().keySet().iterator();
 		ArrayList<String> tags = new ArrayList<String>();
 		
-		tags.size();
 		while(tagKeys.hasNext()){
 			tags.add(tagKeys.next());
 		}
