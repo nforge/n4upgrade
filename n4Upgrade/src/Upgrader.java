@@ -75,4 +75,47 @@ public class Upgrader {
 
 	      return false; 
 	  }
+
+	public void upgrade(String option) {
+		UpgradeCheck n4 = new UpgradeCheck();
+		try {
+			n4.setRepositories();
+			n4.setLocalTags();
+			if(n4.getLocalTags().contains(option)){
+				System.out.println("기존 버전 이하의 버전입니다.");
+			}
+			else {
+				n4.fetchGit();
+				n4.setRemoteTags();
+				ArrayList<String> updatedTags = n4.sortTags(n4.getUpdatedTags());
+				if(n4.getRemoteTags().contains(option)) {
+					System.out.print(option+"버전으로 업그레이드 하시겠습니까?(y/n)  : ");
+					if(getYesNoKey()) {
+						while(!option.equals(updatedTags.get(0))){
+							n4.deleteTag(updatedTags.get(0));
+							updatedTags.remove(0);
+						}
+						n4.merge(option);
+						System.out.println(" 업그레이드 완료 되었습니다.");
+					}
+					else {
+						n4.deleteTags(updatedTags);
+						System.out.println(" 업그레이드가 취소되었습니다.");
+					}
+				}
+				else {
+					System.out.println("존재하지 않는 버전입니다.");
+				}
+			}
+		} catch (InvalidRemoteException e) {
+			e.printStackTrace();
+		} catch (TransportException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

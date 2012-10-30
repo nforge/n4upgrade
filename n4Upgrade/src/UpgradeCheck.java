@@ -41,12 +41,35 @@ public class UpgradeCheck {
 	private ArrayList<String> remoteTags;
 	private String remoteURI;
 	
+	public Repository getRepository() {
+		return this.local;
+	}
+	
 	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		this.local = new RepositoryBuilder().findGitDir().build();
 		this.remoteURI = getRemote();
 		this.localGit = new Git(local);
 	}
 	
+	public ArrayList<String> getLocalTags() {
+		return this.localTags;
+	}
+	
+	public void setLocalTags() {
+		this.localTags = getTags(local);
+	}
+	
+	public ArrayList<String> getRemoteTags() {
+		return this.remoteTags;
+	}
+	
+	public void setRemoteTags() {
+		this.remoteTags = getTags(local);
+	}
+	
+	/* 
+	 * 현재 local 저장소의 원격 저장소의 주소(URL) 받아오기
+	 */
 	public String getRemote(){
 		Config storedConfig = local.getConfig();
 		Set<String> remotes = storedConfig.getSubsections("remote");
@@ -55,15 +78,24 @@ public class UpgradeCheck {
 		return storedConfig.getString("remote", remoteName, "url");
 	}
 	
+	/*
+	 * 현재 저장소에 Tag 정보의 유무 확인 
+	 */
 	public boolean hasNoTags() { 
 		return getTags(local).isEmpty();
 	}
 	
-	public void fetchGit(Repository repo) throws InvalidRemoteException, TransportException, GitAPIException{
+	/* 
+	 * 원격 저장소의 tag 내역을 local 저장소로 fetch.
+	 */
+	public void fetchGit() throws InvalidRemoteException, TransportException, GitAPIException{
 		FetchCommand fetch = localGit.fetch();
 		fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec(REMOTE_BRANCH)).call();
 	}
 	
+	/*
+	 * 저장소의 Tag 목록 받아오기
+	 */
 	public ArrayList<String> getTags(Repository repository){
 		Iterator<String> tagKeys = repository.getTags().keySet().iterator();
 		ArrayList<String> tags = new ArrayList<String>();
@@ -75,22 +107,33 @@ public class UpgradeCheck {
 		return tags;
 	}
 
+	/*
+	 * tag 목록 중에서 제일 최신 버전 찾아내기
+	 */
 	public String findLastTag(ArrayList<String> tags){
+		return sortTags(tags).get(0);
+	}
+	
+	public ArrayList<String> sortTags(ArrayList<String> tags) {
 		Collections.sort(tags, new Comparator<String>() {
 			public int compare(String tag1, String tag2) {
 				return Double.valueOf(tag1)>Double.valueOf(tag2)?-1:1;
 			}
 		});
-		return tags.get(0);
+		return tags;
 	}
 	
+	/*
+	 * 현재 local 저장소의 버전이 원격 저장소와 비교했을 때 최신 버전인지 확인
+	 * 	최신버전일 경우 true, 아닐 경우 false  return
+	 */
 	public boolean isLatetestVersion() throws WrongRepositoryStateException, InvalidConfigurationException, DetachedHeadException, InvalidRemoteException, CanceledException, RefNotFoundException, NoHeadException, TransportException, GitAPIException{
-		this.localTags = getTags(local);
+		setLocalTags();
 		String lastLocalTag = findLastTag(localTags);
 		
-		fetchGit(local);
+		fetchGit();
 		
-		this.remoteTags = getTags(local);
+		setRemoteTags();
 		String lastRemoteTag = findLastTag(remoteTags);
 		
 		System.out.println(" - Current version : " + lastLocalTag);
@@ -99,6 +142,10 @@ public class UpgradeCheck {
 		return lastLocalTag.equals(lastRemoteTag);
 	}
 	
+	/*
+	 * 원격 저장소에서 받아온 새로운 버전의 tag 모음 반환
+	 *    local에 없는 tag list를 반환한다
+	 */
 	public ArrayList<String> getUpdatedTags(){
 		for(String tag : localTags) {
 			if(remoteTags.contains(tag)) {
@@ -107,18 +154,38 @@ public class UpgradeCheck {
 		}
 		return remoteTags;
 	}
-
+	
+	/*
+	 * 새로운 버전의 tag로 local 저장소를 merge 
+	 */
 	public void merge(ArrayList<String> updatedTags) throws IOException, NoHeadException, ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException, WrongRepositoryStateException, NoMessageException, GitAPIException {
-		Ref tag = local.getRef(findLastTag(updatedTags));
+		merge(findLastTag(updatedTags));
+	}
+	
+	/*
+	 * 새로운 버전의 tag로 local 저장소를 merge 
+	 */
+	public void merge(String optionTag) throws IOException, NoHeadException, ConcurrentRefUpdateException, CheckoutConflictException, InvalidMergeHeadsException, WrongRepositoryStateException, NoMessageException, GitAPIException {
+		Ref tag = local.getRef(optionTag);
 		MergeCommand merge = localGit.merge();
 		merge.include(tag).call();
 	}
-
+	
+	/*
+	 * upgrade를 원치 않을 경우 받아온 tag 목록 삭제
+	 */
 	public void deleteTags(ArrayList<String> updatedTags) throws GitAPIException {
 		for(String tag : updatedTags) {
+			deleteTag(tag);
+		}
+	}
+	
+	/*
+	 * 특정 tag 삭제
+	 */
+	public void deleteTag(String tag) throws GitAPIException {
 			DeleteTagCommand delete = localGit.tagDelete();
 			delete.setTags(tag).call();
-		}
 	}
 	
 }

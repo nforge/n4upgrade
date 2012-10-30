@@ -3,7 +3,13 @@ public class Upgrade {
 
 	public static void main(String[] args) {
 		Upgrader upgrader = new Upgrader();
-		upgrader.upgrade();
+		
+		if(args.length==0) {
+			upgrader.upgrade();
+		}
+		else {
+			upgrader.upgrade(args[0]);
+		}
 	}
 
 }
