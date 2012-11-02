@@ -138,11 +138,11 @@ public class UpgradeCheck {
 	/*
 	 * tag 목록 중에서 제일 최신 버전 찾아내기
 	 */
-	public String findLastTag(ArrayList<String> tags){
+	public static String findLastTag(ArrayList<String> tags){
 		return sortTags(tags).get(0);
 	}
 	
-	public ArrayList<String> sortTags(ArrayList<String> tags) {
+	public static ArrayList<String> sortTags(ArrayList<String> tags) {
 		Collections.sort(tags, new Comparator<String>() {
 			public int compare(String tag1, String tag2) {
 				return Double.valueOf(tag1)>Double.valueOf(tag2)?-1:1;

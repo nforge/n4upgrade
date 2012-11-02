@@ -4,7 +4,6 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.jgit.api.Git;
@@ -14,11 +13,11 @@ import org.junit.*;
 
 public class UpgradeCheckTest {
 	
-	String CURRENT_PATH = System.getProperty("user.dir") + "/test/";
+	final String TEST_PATH = "resources/test/repo/git/";
 	
 	@After
     public void after() {
-        rm_rf(new File(CURRENT_PATH));
+        rm_rf(new File(TEST_PATH));
     }
 	
 	@Test
@@ -65,17 +64,18 @@ public class UpgradeCheckTest {
 	@Test
 	public void getTags() throws Exception {
 		//Given
-		String gitPath = CURRENT_PATH + ".git";
+		String gitPath = TEST_PATH + ".git";
 		Repository testRepo = new RepositoryBuilder().setGitDir(new File(gitPath)).build();
 		testRepo.create(false);
 		Git testGit = new Git(testRepo);
-		String testFilePath = CURRENT_PATH + "readme.txt";
+		String testFilePath = TEST_PATH + "readme.txt";
 		BufferedWriter out = new BufferedWriter(new FileWriter(testFilePath));
 		ArrayList<String> tagList = new ArrayList<String>();
 		
 		//When
         out.write("hello 1");
         out.flush();
+        out.close();
         testGit.add().addFilepattern("readme.txt").call();
         testGit.commit().setMessage("commit 1").call();
 		
@@ -95,11 +95,36 @@ public class UpgradeCheckTest {
 	@Test
 	public void findLastTag() {
 		//Given
+		ArrayList<String> tags = new ArrayList<String>();
 		
 		//When
-				
-		//Then
+		tags.add("0.2");
+		tags.add("1.0");
+		tags.add("1.4");
+		tags.add("3.9");
+		tags.add("11.0");
+		String tag = UpgradeCheck.findLastTag(tags);
 		
+		//Then
+		assertThat(tag).isEqualTo("11.0");
+	}
+	
+	@Test
+	public void sortTags(){
+		//Given
+		ArrayList<String> tags = new ArrayList<String>();
+		
+		//when
+		tags.add("8.8");
+		tags.add("2.0");
+		tags.add("11.3");
+		tags.add("1.5");
+		tags = UpgradeCheck.sortTags(tags);
+		
+		//Then
+		assertThat(tags.get(0)).isEqualTo("11.3");
+		assertThat(tags.get(1)).isEqualTo("8.8");
+		assertThat(tags.get(3)).isEqualTo("1.5");
 	}
 	
 	@Test
