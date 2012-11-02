@@ -4,11 +4,16 @@ import static org.fest.assertions.Assertions.assertThat;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.junit.*;
 
 public class UpgradeCheckTest {
@@ -32,13 +37,22 @@ public class UpgradeCheckTest {
 	}
 	
 	@Test
-	public void getRemote() {
+	public void getRemote() throws IOException {
 		//Given
+		String gitPath = TEST_PATH + ".git";
+		Repository testRepo = new RepositoryBuilder().setGitDir(new File(gitPath)).build();
+		testRepo.create(false);
+		StoredConfig config = testRepo.getConfig();
+		String fakeUrl = "fakeurl.git";
+		String remoteName = "branch";
 		
 		//When
-				
-		//Then
+		config.setString("remote", remoteName, "url", fakeUrl);
+		config.save();
+		String remoteUrl = UpgradeCheck.getRemote(testRepo);
 		
+		//Then
+		assertThat(remoteUrl).isEqualTo(fakeUrl);
 	}
 	
 	@Test
@@ -168,11 +182,29 @@ public class UpgradeCheckTest {
 	}
 	
 	@Test
-	public void deleteTag() {
+	public void deleteTag() throws IOException, NoFilepatternException, GitAPIException {
 		//Given
+		String gitPath = TEST_PATH + ".git";
+		Repository testRepo = new RepositoryBuilder().setGitDir(new File(gitPath)).build();
+		testRepo.create(false);
+		Git testGit = new Git(testRepo);
+		String testFilePath = TEST_PATH + "readme.txt";
+		BufferedWriter out = new BufferedWriter(new FileWriter(testFilePath));
+		ArrayList<String> tagList = new ArrayList<String>();
 		
 		//When
-				
+		out.write("hello 1");
+		out.flush();
+	    out.close();
+	    testGit.add().addFilepattern("readme.txt").call();
+	    testGit.commit().setMessage("commit 1").call();
+		
+		tagList.add("1.0");
+		tagList.add("2.0");
+		for(String tag : tagList){
+			testGit.tag().setName(tag).call();
+		}
+		
 		//Then
 		
 	}

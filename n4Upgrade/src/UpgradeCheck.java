@@ -29,6 +29,7 @@ import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.TagOpt;
 
@@ -45,7 +46,7 @@ public class UpgradeCheck {
 	public UpgradeCheck() throws InvalidRemoteException, TransportException, IOException, GitAPIException {
 		setLocal();
 		setLocalGit();
-		setRemoteURI();
+		setRemoteURI(this.local);
 	}
 	
 	public Repository getLocal() {
@@ -72,8 +73,8 @@ public class UpgradeCheck {
 		return this.remoteURI;
 	}
 	
-	public void setRemoteURI() {
-		Config storedConfig = local.getConfig();
+	public void setRemoteURI(Repository local) {
+		StoredConfig storedConfig = local.getConfig();
 		Set<String> remotes = storedConfig.getSubsections("remote");
 		String remoteName = (String) remotes.toArray()[0];
 		this.remoteURI = storedConfig.getString("remote", remoteName, "url");
@@ -98,7 +99,7 @@ public class UpgradeCheck {
 	/* 
 	 * 현재 local 저장소의 원격 저장소의 주소(URL) 받아오기
 	 */
-	public String getRemote(){
+	public static String getRemote(Repository local){
 		Config storedConfig = local.getConfig();
 		Set<String> remotes = storedConfig.getSubsections("remote");
 		String remoteName = (String) remotes.toArray()[0];
