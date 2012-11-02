@@ -1,5 +1,6 @@
 // 주석, refactoring, testunit
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,14 +42,41 @@ public class UpgradeCheck {
 	private ArrayList<String> remoteTags;
 	private String remoteURI;
 	
-	public Repository getRepository() {
+	public UpgradeCheck() throws InvalidRemoteException, TransportException, IOException, GitAPIException {
+		setLocal();
+		setLocalGit();
+		setRemoteURI();
+	}
+	
+	public Repository getLocal() {
 		return this.local;
 	}
 	
-	public void setRepositories() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
+	public void setLocal() throws IOException, InvalidRemoteException, TransportException, GitAPIException{
 		this.local = new RepositoryBuilder().findGitDir().build();
-		this.remoteURI = getRemote();
-		this.localGit = new Git(local);
+	}
+	
+	public Git getLocalGit() {
+		return this.localGit;
+	}
+	
+	public void setLocalGit() {
+		this.localGit = new Git(local);		
+	}
+	
+	public void setRepository(String gitPath) throws IOException {
+		this.local = new RepositoryBuilder().setGitDir(new File(gitPath)).build();
+	}
+	
+	public String getRemoteURI() {
+		return this.remoteURI;
+	}
+	
+	public void setRemoteURI() {
+		Config storedConfig = local.getConfig();
+		Set<String> remotes = storedConfig.getSubsections("remote");
+		String remoteName = (String) remotes.toArray()[0];
+		this.remoteURI = storedConfig.getString("remote", remoteName, "url");
 	}
 	
 	public ArrayList<String> getLocalTags() {
@@ -96,7 +124,7 @@ public class UpgradeCheck {
 	/*
 	 * 저장소의 Tag 목록 받아오기
 	 */
-	public ArrayList<String> getTags(Repository repository){
+	public static ArrayList<String> getTags(Repository repository){
 		Iterator<String> tagKeys = repository.getTags().keySet().iterator();
 		ArrayList<String> tags = new ArrayList<String>();
 		

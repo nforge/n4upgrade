@@ -16,9 +16,8 @@ import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 
 public class Upgrader {
 	public void upgrade(){
-		UpgradeCheck n4 = new UpgradeCheck();
 		try {
-			n4.setRepositories();
+			UpgradeCheck n4 = new UpgradeCheck();
 			if(n4.hasNoTags()){
 				System.out.println(" local 저장소에 upgrade 버전 태그가 존재하지 않습니다.");
 				System.out.println(" upgrade를 종료합니다.");
@@ -77,9 +76,8 @@ public class Upgrader {
 	  }
 
 	public void upgrade(String option) {
-		UpgradeCheck n4 = new UpgradeCheck();
 		try {
-			n4.setRepositories();
+			UpgradeCheck n4 = new UpgradeCheck();
 			n4.setLocalTags();
 			if(n4.getLocalTags().contains(option)){
 				System.out.println("기존 버전 이하의 버전입니다.");
