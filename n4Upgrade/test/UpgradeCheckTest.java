@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
-import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -53,16 +52,6 @@ public class UpgradeCheckTest {
 		
 		//Then
 		assertThat(remoteUrl).isEqualTo(fakeUrl);
-	}
-	
-	@Test
-	public void hasNoTags() {
-		//Given
-		
-		//When
-				
-		//Then
-		
 	}
 	
 	@Test
@@ -154,25 +143,29 @@ public class UpgradeCheckTest {
 	@Test
 	public void getUpdatedTags() {
 		//Given
+		ArrayList<String> localTags = new ArrayList<String>();
+		ArrayList<String> remoteTags = new ArrayList<String>();
+		ArrayList<String> returnTags;
 		
 		//When
-				
+		localTags.add("1.0");
+		localTags.add("1.4");
+		remoteTags.add("1.0");
+		remoteTags.add("1.4");
+		remoteTags.add("2.0");
+		remoteTags.add("3.6");
+		returnTags = UpgradeCheck.getUpdatedTags(localTags, remoteTags);
+
 		//Then
-		
+		assertThat(returnTags.size()).isEqualTo(2);
+		assertThat(returnTags.contains("2.0")).isTrue();
+		assertThat(returnTags.contains("3.6")).isTrue();
+		assertThat(returnTags.contains("1.4")).isFalse();
+		assertThat(returnTags.contains("1.0")).isFalse();
 	}
 	
 	@Test
 	public void merge() {
-		//Given
-		
-		//When
-				
-		//Then
-		
-	}
-	
-	@Test
-	public void deleteTags() {
 		//Given
 		
 		//When
@@ -204,8 +197,12 @@ public class UpgradeCheckTest {
 		for(String tag : tagList){
 			testGit.tag().setName(tag).call();
 		}
+		UpgradeCheck.deleteTag(testGit, "2.0");
+		ArrayList<String> tags = UpgradeCheck.getTags(testRepo);
 		
 		//Then
+		assertThat(tags.size()).isEqualTo(1);
+		assertThat(tags.get(0)).isEqualTo("1.0");
 		
 	}
 	

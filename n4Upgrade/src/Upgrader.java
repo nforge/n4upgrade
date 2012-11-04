@@ -27,7 +27,7 @@ public class Upgrader {
 				System.out.println(" 최신 버전입니다.");
 			} 
 			else {
-				ArrayList<String> updatedTags = n4.getUpdatedTags();
+				ArrayList<String> updatedTags = UpgradeCheck.getUpdatedTags(n4.getLocalTags(), n4.getRemoteTags());
 				System.out.println(" 최신 버전이 존재합니다.");
 				System.out.print(" 업그레이드 하시겠습니까?(y/n)  : ");
 				if(getYesNoKey()) {
@@ -35,7 +35,7 @@ public class Upgrader {
 					System.out.println(" 업그레이드 완료 되었습니다.");
 				}
 				else {
-					n4.deleteTags(updatedTags);
+					n4.deleteTags(n4.getLocalGit(), updatedTags);
 					System.out.println(" 업그레이드가 취소되었습니다.");
 				}
 			}
@@ -85,19 +85,19 @@ public class Upgrader {
 			else {
 				n4.fetchGit();
 				n4.setRemoteTags();
-				ArrayList<String> updatedTags = n4.sortTags(n4.getUpdatedTags());
+				ArrayList<String> updatedTags = UpgradeCheck.sortTags(UpgradeCheck.getUpdatedTags(n4.getLocalTags(), n4.getRemoteTags()));
 				if(n4.getRemoteTags().contains(option)) {
 					System.out.print(option+"버전으로 업그레이드 하시겠습니까?(y/n)  : ");
 					if(getYesNoKey()) {
 						while(!option.equals(updatedTags.get(0))){
-							n4.deleteTag(updatedTags.get(0));
+							UpgradeCheck.deleteTag(n4.getLocalGit(), updatedTags.get(0));
 							updatedTags.remove(0);
 						}
 						n4.merge(option);
 						System.out.println(" 업그레이드 완료 되었습니다.");
 					}
 					else {
-						n4.deleteTags(updatedTags);
+						n4.deleteTags(n4.getLocalGit(), updatedTags);
 						System.out.println(" 업그레이드가 취소되었습니다.");
 					}
 				}

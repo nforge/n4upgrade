@@ -1,5 +1,3 @@
-// 주석, refactoring, testunit
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -175,7 +173,7 @@ public class UpgradeCheck {
 	 * 원격 저장소에서 받아온 새로운 버전의 tag 모음 반환
 	 *    local에 없는 tag list를 반환한다
 	 */
-	public ArrayList<String> getUpdatedTags(){
+	public static ArrayList<String> getUpdatedTags(ArrayList<String> localTags, ArrayList<String> remoteTags){
 		for(String tag : localTags) {
 			if(remoteTags.contains(tag)) {
 				remoteTags.remove(tag);
@@ -203,16 +201,16 @@ public class UpgradeCheck {
 	/*
 	 * upgrade를 원치 않을 경우 받아온 tag 목록 삭제
 	 */
-	public void deleteTags(ArrayList<String> updatedTags) throws GitAPIException {
+	public void deleteTags(Git localGit, ArrayList<String> updatedTags) throws GitAPIException {
 		for(String tag : updatedTags) {
-			deleteTag(tag);
+			deleteTag(localGit, tag);
 		}
 	}
 	
 	/*
 	 * 특정 tag 삭제
 	 */
-	public void deleteTag(String tag) throws GitAPIException {
+	public static void deleteTag(Git localGit, String tag) throws GitAPIException {
 			DeleteTagCommand delete = localGit.tagDelete();
 			delete.setTags(tag).call();
 	}
