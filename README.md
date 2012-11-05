@@ -1,4 +1,4 @@
 n4upgrade
 ==========
 
-nforge4 upgrade 하는 java plugin
+nforge4 upgrade java plugin
