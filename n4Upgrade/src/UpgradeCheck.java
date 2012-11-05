@@ -27,24 +27,27 @@ import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryBuilder;
-import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.TagOpt;
 
 public class UpgradeCheck {
 	
-	public final static String  REMOTE_BRANCH = "refs/heads/upgrade";
+	private static String remoteBranch = "refs/heads/upgrade";
+	private static String remoteURI = "git://github.com/youngje/privateNhn.git";
 	
 	private Repository local;
 	private Git localGit;
 	private ArrayList<String> localTags;
 	private ArrayList<String> remoteTags;
-	private String remoteURI;
+	/*
+	 * REMOTE_URI로 대체
+	 * */
+	//private String remoteURI;
 	
 	public UpgradeCheck() throws InvalidRemoteException, TransportException, IOException, GitAPIException {
 		setLocal();
 		setLocalGit();
-		setRemoteURI(this.local);
+		//setRemoteURI(this.local);
 	}
 	
 	public Repository getLocal() {
@@ -68,15 +71,23 @@ public class UpgradeCheck {
 	}
 	
 	public String getRemoteURI() {
-		return this.remoteURI;
+		return remoteURI;
 	}
 	
+	public void setRemoteURI(String remoteURI) {
+		UpgradeCheck.remoteURI = remoteURI;
+	}
+	
+	/* 현재 local의 정보에서 RemoeURI를 빼오는 메소드 
+	 * git read only 주소를 사용하기 위해 사용안함.
+	 * 
 	public void setRemoteURI(Repository local) {
 		StoredConfig storedConfig = local.getConfig();
 		Set<String> remotes = storedConfig.getSubsections("remote");
 		String remoteName = (String) remotes.toArray()[0];
 		this.remoteURI = storedConfig.getString("remote", remoteName, "url");
 	}
+	*/
 	
 	public ArrayList<String> getLocalTags() {
 		return this.localTags;
@@ -117,7 +128,8 @@ public class UpgradeCheck {
 	 */
 	public void fetchGit() throws InvalidRemoteException, TransportException, GitAPIException{
 		FetchCommand fetch = localGit.fetch();
-		fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec(REMOTE_BRANCH)).call();
+		//fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec(REMOTE_BRANCH)).call();
+		fetch.setRemote(remoteURI).setTagOpt(TagOpt.FETCH_TAGS).setRefSpecs(new RefSpec(remoteBranch)).call();
 	}
 	
 	/*

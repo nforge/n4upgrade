@@ -32,7 +32,6 @@ public class UpgradeCheckTest {
 		//Then
 		assertThat(n4.getLocal()).isNotNull();
 		assertThat(n4.getLocalGit()).isNotNull();
-		assertThat(n4.getRemoteURI()).isNotNull();
 	}
 	
 	@Test
