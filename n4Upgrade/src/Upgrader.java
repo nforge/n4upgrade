@@ -63,18 +63,6 @@ public class Upgrader {
 		}
 	}
 	
-	public static boolean getYesNoKey() {
-	    int key;
-	    Scanner oScanner = new java.util.Scanner(System.in);
-	    do { 
-	    	key = oScanner.findInLine(".").charAt(0);
-	        if (key == 'y' || key == 'Y') return true;
-	        if (key == 'n' || key == 'N') return false;
-	    } while (key != 0);
-
-	      return false; 
-	  }
-
 	public void upgrade(String option) {
 		try {
 			UpgradeCheck n4 = new UpgradeCheck();
@@ -102,6 +90,7 @@ public class Upgrader {
 					}
 				}
 				else {
+					n4.deleteTags(n4.getLocalGit(), updatedTags);
 					System.out.println("존재하지 않는 버전입니다.");
 				}
 			}
@@ -114,6 +103,18 @@ public class Upgrader {
 		} catch (GitAPIException e) {
 			e.printStackTrace();
 		}
-		
 	}
+	
+	public static boolean getYesNoKey() {
+	    int key;
+	    Scanner oScanner = new java.util.Scanner(System.in);
+	    do { 
+	    	key = oScanner.findInLine(".").charAt(0);
+	        if (key == 'y' || key == 'Y') return true;
+	        if (key == 'n' || key == 'N') return false;
+	    } while (key != 0);
+
+	      return false; 
+	  }
+
 }
