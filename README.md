@@ -4,12 +4,12 @@ n4upgrade
 git을 사용해 설치한 nforge4의 업그레이드를 진행하는 플러그인
 
 Known limitation(제한사항)
-==========================
+--------------
 git으로 설치한 경우에만 사용가능. 
 binary 파일로 설치한 경우는 사용할 수 없습니다.(개발 예정)
 
 Usage(사용방법)
-===============
+---------------
 nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgrade/blob/master/n4upgrade.jar)를 다운받는다.
 쉘이나 cmd 창에서 다음 명령어로 실행
 
