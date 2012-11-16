@@ -34,29 +34,28 @@ nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgra
 * nforge4의 GIT tag 정보를 바탕으로 버전을 구별한다. 
 
 
-upgrade 과정
+업그레이드 순서도(upgrade flowchart)
 ------------
 
-<img src="http://pds21.egloos.com/pds/201211/16/53/d0017953_50a5b09257def.png" width="400">
+<img src="https://raw.github.com/nforge/n4upgrade/master/doc/flowchart_n4upgrade.png" width="450">
+
+* 원격서버(git://github.com/nforge/nforege4)의 tag를 'git fetch --tag' 명령으로 받아와 버전 정보를 확인한다. 
+
+* upgrade를 진행할 경우 'git merge' 명령어로 최신 버전으로 merge 한다.
+
+
+* upgrade 정보만 확인하고 upgrade를 하지 않는 경우 fetch를 통해 받아온 새로운 tag 정보는 삭제한다. 
 
 
 
-기존 설치한 git tag 버전과 remote서버(git://github.com/nforge/nforege4)의 tag 정보를 비교해서 
-최신 버전이 존재할 경우 업그레이드를 진행할 것인지 물어보고 업그레이드를 진행한다. 
+Known issues
+--------------------------
 
-upgrade 과정은 git fetch와 git merge 명령으로 이루어진다. 
+**nforge4를 binary 파일로 설치한 경우**
+    
+> * binary 파일은 war 파일로 배포예정
+> * 최신버전의 war 파일로 덮어씌운다.
+> * nforge4의 저장소와 DB 관련 파일은 migration 해주어야 한다.
 
-git fetch --tag 명령을 통해 최신 tag 정보를 확인한다.
-
-upgrade 정보만 확인하고 upgrade를 하지 않는 경우 fetch를 통해 받아온 새로운 tag 정보는 삭제한다. 
-
-
-
-nforge4를 binary 파일로 설치한 경우의 시나리오
------------------------------------
-
-최신 버전의 war 파일을 받는다. 
-
-
-
+   
 
