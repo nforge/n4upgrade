@@ -17,11 +17,11 @@ binary 파일로 설치한 경우는 사용할 수 없습니다.(개발 예정)
 nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgrade/blob/master/n4upgrade.jar)를 다운받는다.
 쉘이나 cmd 창에서 다음 명령어로 실행
 
-  java -jar n4upgrade.jar
+    java -jar n4upgrade.jar
 
 특정 버전으로 업그레이드를 원할 경우 parameter로 입력가능
 
-  java -jar n4upgrade.jar 2.0
+    java -jar n4upgrade.jar 2.0
 
 
 
