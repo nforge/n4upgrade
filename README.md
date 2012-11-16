@@ -48,13 +48,13 @@ nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgra
 
 
 
-Known issues
---------------------------
+추가 개발사항
+--------------
 
 **nforge4를 binary 파일로 설치한 경우**
     
 > * binary 파일은 war 파일로 배포예정
-> * 최신버전의 war 파일로 덮어씌운다.
+> * 기존 war 파일을 백업하고 최신버전의 war 파일로 덮어씌운다.
 > * nforge4의 저장소와 DB 관련 파일은 migration 해주어야 한다.
 
    
