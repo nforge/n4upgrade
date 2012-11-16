@@ -36,6 +36,8 @@ nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgra
 upgrade 과정
 ------------
 
+<img src="http://pds21.egloos.com/pds/201211/16/53/d0017953_50a5b09257def.png" width="400">
+
 upgrade는 nforge4의 GIT tag 정보를 바탕으로 한다. 
 
 기존 설치한 git tag 버전과 remote서버(http://github.com/nforge/nforege4)의 tag 정보를 비교해서 
