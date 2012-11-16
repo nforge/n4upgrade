@@ -29,8 +29,8 @@ nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgra
 특징
 ----
 
-*순수 java만 사용하여 구현하였다.
-*jgit을 이용하여 GIT repository를 다루었다.
+* 순수 java만 사용하여 구현하였다.
+* jgit을 이용하여 GIT repository를 다루었다.
 
 
 upgrade 과정
