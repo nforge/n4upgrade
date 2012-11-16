@@ -8,7 +8,7 @@ git을 사용해 설치한 nforge4의 업그레이드를 진행하는 플러그�
 제한사항 (Known limitation)
 --------------
 
-git으로 설치한 경우에만 사용가능. 
+nforge4를 git으로 설치한 경우에만 사용가능. 
 binary 파일로 설치한 경우는 사용할 수 없습니다.(개발 예정)
 
 
@@ -40,7 +40,7 @@ upgrade 과정
 
 upgrade는 nforge4의 GIT tag 정보를 바탕으로 한다. 
 
-기존 설치한 git tag 버전과 remote서버(http://github.com/nforge/nforege4)의 tag 정보를 비교해서 
+기존 설치한 git tag 버전과 remote서버(git://github.com/nforge/nforege4)의 tag 정보를 비교해서 
 최신 버전이 존재할 경우 업그레이드를 진행할 것인지 물어보고 업그레이드를 진행한다. 
 
 upgrade 과정은 git fetch와 git merge 명령으로 이루어진다. 
