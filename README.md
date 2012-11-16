@@ -1,4 +1,4 @@
-n4upgrade
+#n4upgrade
 ==========
 [nforge4](https://github.com/nforge/nforge4) upgrade java plugin
 git을 사용해 설치한 nforge4의 업그레이드를 진행하는 플러그인
@@ -24,6 +24,11 @@ nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgra
 
     java -jar n4upgrade.jar 2.0
 
+
+nforge4를 binary 파일로 설치한 경우의 시나리오
+-----------------------------------
+
+최신 버전의 war 파일을 받는다. 
 
 
 
