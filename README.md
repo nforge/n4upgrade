@@ -31,6 +31,7 @@ nforge4를 설치한 폴더에 [n4upgrade.jar](https://github.com/nforge/n4upgra
 
 * 순수 java만 사용하여 구현하였다.
 * jgit을 이용하여 GIT repository를 다루었다.
+* nforge4의 GIT tag 정보를 바탕으로 버전을 구별한다. 
 
 
 upgrade 과정
@@ -38,7 +39,7 @@ upgrade 과정
 
 <img src="http://pds21.egloos.com/pds/201211/16/53/d0017953_50a5b09257def.png" width="400">
 
-upgrade는 nforge4의 GIT tag 정보를 바탕으로 한다. 
+
 
 기존 설치한 git tag 버전과 remote서버(git://github.com/nforge/nforege4)의 tag 정보를 비교해서 
 최신 버전이 존재할 경우 업그레이드를 진행할 것인지 물어보고 업그레이드를 진행한다. 
